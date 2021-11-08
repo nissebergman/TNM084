@@ -131,12 +131,12 @@ void init(void)
 	glBufferData(GL_ARRAY_BUFFER, 12*sizeof(GLfloat), texCoords, GL_STATIC_DRAW);
 	glVertexAttribPointer(glGetAttribLocation(program, "in_TexCoord"), 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(glGetAttribLocation(program, "in_TexCoord"));
-	
+
 	// Texture unit
 	glUniform1i(glGetUniformLocation(program, "tex"), 0); // Texture unit 0
 
 // Constants common to CPU and GPU
-	glUniform1i(glGetUniformLocation(program, "displayGPUversion"), 0); // shader generation off
+	glUniform1i(glGetUniformLocation(program, "displayGPUversion"), 1); // shader generation off
 	glUniform1f(glGetUniformLocation(program, "ringDensity"), ringDensity);
 
 	maketexture();
@@ -173,8 +173,11 @@ void display(void)
 	glBindVertexArray(vertexArrayObjID);	// Select VAO
 	glDrawArrays(GL_TRIANGLES, 0, 6);	// draw object
 	
+	//float u_time = 10.0;
+	glUniform1f(glGetUniformLocation(program, "time"), 
+	glutGet(GLUT_ELAPSED_TIME) / 1000.0);
+
 	printError("display");
-	
 	glutSwapBuffers();
 }
 
