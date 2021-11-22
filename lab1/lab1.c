@@ -40,8 +40,8 @@ void maketexture()
 		// Different instantiation of ptex. Tweaked to give
 		// shaded rectangle w transitioning colors.		
 		/*
-		ptex[x][y][0] = x/2;
-		ptex[x][y][1] = y/2;
+		ptex[x][y][0] = x*10;
+		ptex[x][y][1] = y*10;
 		ptex[x][y][2] = 128;
 		*/
 
@@ -49,10 +49,16 @@ void maketexture()
 		fx = (float)(x-kTextureSize/2.)/100;
 		fy = (float)(y-kTextureSize/2.)/100;
 
+		
 		// Pattern shape (x²+y² = circle eq)
-		fxo = fx;
-		fyo = fy;
-
+		//fxo = fx;
+		//fyo = fy/1.5;
+		
+		
+		// Pattern shape (x²+y² = circle eq)
+		fxo = noise2(fx, fy);
+		fyo = noise2(fx, fy);
+		
 		// Repeating the pattern?
 		fxo = cos(fxo * ringDensity);
 		fyo = sin(fyo * ringDensity);
@@ -62,12 +68,11 @@ void maketexture()
 		if (fxo < -1.0) fxo = -1.0;
 		if (fyo > 1.0) fyo = 1.0;
 		if (fyo < -1.0) fyo = -1.0;
-		
+
 		// Set colors RGB (0-255)
 		ptex[x][y][0] = fxo * 127 + 127;
 		ptex[x][y][1] = fyo * 127 + 127;
-		ptex[x][y][2] = 128;
-	
+		ptex[x][y][2] = 128;	
 	}
 }
 
@@ -136,7 +141,7 @@ void init(void)
 	glUniform1i(glGetUniformLocation(program, "tex"), 0); // Texture unit 0
 
 // Constants common to CPU and GPU
-	glUniform1i(glGetUniformLocation(program, "displayGPUversion"), 1); // shader generation off
+	glUniform1i(glGetUniformLocation(program, "displayGPUversion"), 0); // shader generation off
 	glUniform1f(glGetUniformLocation(program, "ringDensity"), ringDensity);
 
 	maketexture();
@@ -171,12 +176,13 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glBindVertexArray(vertexArrayObjID);	// Select VAO
+
+	float u_time = 10.0;
+	glUniform1f(glGetUniformLocation(program, "u_time"), glutGet(GLUT_ELAPSED_TIME) / 1000.0);
+	glutPostRedisplay();
+
 	glDrawArrays(GL_TRIANGLES, 0, 6);	// draw object
 	
-	//float u_time = 10.0;
-	glUniform1f(glGetUniformLocation(program, "time"), 
-	glutGet(GLUT_ELAPSED_TIME) / 1000.0);
-
 	printError("display");
 	glutSwapBuffers();
 }

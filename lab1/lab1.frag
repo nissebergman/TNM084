@@ -8,12 +8,12 @@
 out vec4 out_Color;
 in vec2 texCoord;
 uniform sampler2D tex;
-uniform float time;
+uniform float u_time;
 
 uniform int displayGPUversion;
 //uniform float ringDensity;
 
-const float ringDensity = 10.0;
+const float ringDensity = 20.0;
 // Stegus randomfunction
 vec2 random2(vec2 st)
 {
@@ -78,8 +78,21 @@ void main(void)
 	if (displayGPUversion == 1)
 	{
 		vec2 f = texCoord * 2.0 - vec2(1.0);
-		float radius = length(f); // Same as sqrt(fx*fx + fy * fy);
-		out_Color = vec4(cos(radius * ringDensity)/ 2.0 + 0.5, 0.5, sin(radius * ringDensity)/ 2.0 + 0.5, 1.0) * time;
+        float noiseTexCoord = noise(f * u_time);
+		//float radius = length(f); // Same as sqrt(fx*fx + fy * fy);
+
+        float x = noiseTexCoord;
+        float y = noiseTexCoord;
+
+        //float x = texCoord[1];
+        //float y = texCoord[0];
+
+		out_Color = vec4(
+        cos(x * ringDensity)/ 2.0 + 0.5, 
+        0.5, 
+        sin(y * ringDensity)/ 2.0 + 0.5,
+        1.0
+        );
 	}
 	else
 		out_Color = texture(tex, texCoord);
