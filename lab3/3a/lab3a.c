@@ -139,41 +139,49 @@ void recursiveTree(int depth, float topW, float botW, float len, float angle) {
 		return;
 	}
 	else {
-		//int random = rand() % 0.7;
-		angle += 0.1;
-		srand(time(NULL));
-		angle = random;
 		
-		topW *= 0.6;
-		botW *= 0.6;
-		len *= 0.7;
+		int random = rand()%2000;
+		GLfloat randomAngle = 1 - (GLfloat) random/1000;
+		printf("%f", randomAngle);
+		printf("\n***");
+		//angle += 0.5;
+		//angle = 0.4;
+		angle = randomAngle;
+
+		topW *= 0.5;
+		botW *= 0.5;
+		float newLen = len * 0.7;
+		float initLen = len;
 		
 		//Branches
 		gluggPushMatrix();
-		gluggTranslate(0.0f, len, 0.0f);
-		gluggRotate(angle, 1.0f, 1.0f, -1.0f);
-		MakeCylinderAlt(20, len, topW, botW);
+		gluggTranslate(0.0f, initLen, 0.0f);
+		gluggRotate(angle, -1.0f, 0.0f, -1.0f);
+		MakeCylinderAlt(20, newLen, topW, botW);
 		
-		recursiveTree(depth-1, topW, botW, len, angle);
+		recursiveTree(depth-1, topW, botW, newLen, angle);
+		gluggPopMatrix();
+
+
+
+		//Branches
+		gluggPushMatrix();
+		gluggTranslate(0.0f, initLen, 0.0f);
+		gluggRotate(angle, -1.0f, 1.0f, 1.0f);
+		MakeCylinderAlt(20, newLen, topW, botW);
+		
+		recursiveTree(depth-1, topW, botW, newLen, angle);
 		gluggPopMatrix();
 
 		//Branches
 		gluggPushMatrix();
-		gluggTranslate(0.0f, len, 0.0f);
-		gluggRotate(2*angle, 1.0f, 1.0f, 1.0f);
-		MakeCylinderAlt(20, len, topW, botW);
+		gluggTranslate(0.0f, initLen, 0.0f);
+		gluggRotate(angle, 1.0f, -1.0f, -1.0f);
+		MakeCylinderAlt(20, newLen, topW, botW);
 		
-		recursiveTree(depth-1, topW, botW, len, angle);
+		recursiveTree(depth-1, topW, botW, newLen, angle);
 		gluggPopMatrix();
 
-		//Branches
-		gluggPushMatrix();
-		gluggTranslate(0.0f, len, 0.0f);
-		gluggRotate(1.5*angle, -1.0f, 1.0f, -1.0f);
-		MakeCylinderAlt(20, len, topW, botW);
-		
-		recursiveTree(depth-1, topW, botW, len, angle);
-		gluggPopMatrix();
 		
 	}
 }
@@ -191,18 +199,18 @@ GLuint MakeTree(int *count, GLuint program)
 
 	float topwidth =  0.1;
 	float bottomwidth = 0.15;
-	float branchlength = 2.0f;
-	int height = 5;
+	float branchlength = 1.5f;
+	int depth = 6;
 	int currentHeight = 0;
 	int counter = 0;
-	float angle = 2*M_PI/3;
+	float angle = 0.6;
 
 	
 	//Stem
-	MakeCylinderAlt(20, branchlength*0.75, topwidth, bottomwidth);
+	MakeCylinderAlt(20, branchlength, topwidth, bottomwidth);
 	gluggPushMatrix();
 
-	recursiveTree(height, 0.1, 0.15, 2.0, angle);
+	recursiveTree(depth, 0.1, 0.15, branchlength, angle);
 
 /*
 	MakeBranches();
@@ -492,6 +500,7 @@ void keys(unsigned char key, int x, int y)
 
 int main(int argc, char *argv[])
 {
+	srand(time(NULL));
 	glutInit(&argc, argv);
 	glutInitContextVersion(3, 2);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
